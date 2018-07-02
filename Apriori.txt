@@ -1,0 +1,372 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+
+public class Apriori {
+
+	private static Scanner sc;
+	
+	public static ArrayList<ItemDetails> getInput(int n){		
+		ArrayList<ItemDetails> Transaction = new ArrayList<ItemDetails>();
+		String a="y";
+		String itemname;
+		int j, Tid;
+		String[] items = new String[100];
+		String[] itemlist = new String[100];
+		
+		
+		
+		for(int i = 0; i < n; i++)
+		{
+			j = 0;
+			String[] itemno = new String[3];
+			ItemDetails item = new ItemDetails();
+			System.out.println("Enter transaction id : ");
+			Tid = sc.nextInt();
+			item.setTid(Tid);
+			while(a.equalsIgnoreCase("y")){
+				System.out.println("Enter item :");
+				itemname = sc.next();
+				itemno[j] = itemname;
+				j++;
+				System.out.println("Enter y if you wish to add more items for the transaction id "+item.getTid()+" or else n for no: ");
+	            a = sc.next();
+	            a = a.toLowerCase();
+	        }
+			a="y";
+			item.setItems(itemno);
+			Transaction.add(item);
+		}
+		
+		return Transaction;
+	}
+	
+	public static String[] getItems(ArrayList<ItemDetails> Transaction)
+	{
+
+		String[] itemlist = new String[100];
+		String[] items = new String[100];
+		int j = 0;
+		for (ItemDetails itd : Transaction) {
+			items = itd.getItems();
+			for (String s : items) {
+				if(s != null)
+				{
+					itemlist[j] = s;
+					j++;
+				}
+			}
+		}
+		return itemlist;
+	}
+	
+	
+	public static ArrayList<String> UniqueItems(String[] itemlist)
+	{
+		int j = 0;
+		ArrayList<String> unique = new ArrayList<String>();
+		unique.add(itemlist[0]);
+		for(int i = 1; i < itemlist.length; i++)
+		{
+			for(j = i; j < itemlist.length; j++)
+			{
+				if(unique.contains(itemlist[i]))
+				{
+					break;
+				}
+				else
+				{
+					unique.add(itemlist[i]);
+				}
+			}
+		}
+		return unique;
+	}
+	
+	public static ArrayList<ItemCount> getItemCount(ArrayList<String> unique, String[] itemlist)
+	{
+		int cnt;
+		ArrayList<ItemCount> ic= new ArrayList<ItemCount>();
+		for (String s : unique)
+		{
+			if(s != null)
+			{
+				cnt = 0;
+				for (String r : itemlist)
+				{
+					if(r != null)
+					{
+						if(r.equals(s))
+							cnt = cnt + 1;
+					}
+				}
+				ItemCount count = new ItemCount();
+				count.setItem(s);
+				count.setCount(cnt);
+				ic.add(count);
+			}					
+		}
+		return ic;
+	}
+	
+
+	
+	public static ArrayList<ItemCount> AgetItemCount(String[] newItemSet, ArrayList<ItemDetails> Transaction)
+	{
+		String[] sarr  = newItemSet;
+		int cnt = 0;
+		int i=0;
+		int flag=0;
+		String[] its = new String[10];
+		String[] it = new String[10];//abc ad ac bef
+		String temp = "";
+		ArrayList<ItemCount> ic= new ArrayList<ItemCount>();
+		for (ItemDetails r : Transaction)
+		{
+			its = r.getItems();
+			for (String s : its) {
+				if(s != null)
+				temp = temp + s;
+			}
+			
+			it[i] = temp;
+			i++;
+			temp = "";
+		}
+		int size = 0;
+		System.out.println("String array it:");
+		for (String s : it) {
+			if(s != null)
+			System.out.print(s+ " ");
+		}
+		System.out.println("String array newItemSet:");
+		for (String s : sarr) {
+			if(s != null)
+			{
+			System.out.print(s+ " ");
+			size = size + 1;
+			}
+		}
+		System.out.println("size : "+size);
+		
+		i=0;
+		int cntarray[]=new int[size];
+		for(String s : sarr)//ab ac bc
+		{
+			if(s != null)
+			{
+			char arr1[]=s.toCharArray();
+			for(String p : it)//abc ad ac bef
+			{
+				if(p != null)
+				{
+				char arr2[]=p.toCharArray();
+				for(int j=0;j<arr1.length;j++)
+				{
+					char ch=arr1[j];
+					for(int k=0;k<arr2.length;k++)
+					{
+						char ch2=arr2[k];
+						if(ch==ch2)
+						{
+							flag++;
+						}
+						if(flag==arr1.length)
+						{
+							
+							cnt++;
+							break;
+						}
+					}
+				}
+				
+				flag=0;
+			
+				
+				
+				}
+			}
+			
+				if(i<cntarray.length)
+				{cntarray[i]=cnt;
+				i++;}
+				System.out.println("cnt= "+cnt);
+				
+			cnt=0;
+			}	
+		}
+		
+		/*for(int x:cntarray)
+		{
+			System.out.print(x+" ");
+		}*/
+		i = 0;
+		for (String s : newItemSet) 
+		{
+			if( s!= null)
+			{
+				ItemCount count = new ItemCount();
+				count.setItem(s);
+				count.setCount(cntarray[i]);
+				i++;
+				ic.add(count);
+			}
+		}
+	
+		
+		
+		
+			
+		return ic;
+	}
+	
+	
+	public static ArrayList<ItemCount> sort(ArrayList<ItemCount> ic,int support)
+	{
+		ArrayList<ItemCount> icnew= new ArrayList<ItemCount>();
+		for (ItemCount c : ic) 
+		{
+			if(support <= c.getCount())
+			{
+				ItemCount ct = new ItemCount(c.getItems(), c.getCount());
+				icnew.add(ct);
+			}
+		}
+		return icnew;
+	}
+
+
+	public static void main(String[] args) {
+		sc = new Scanner(System.in);
+		System.out.println("Enter the minimum support in percentage: ");
+		int supportper = sc.nextInt();
+		System.out.println("Enter the minimum confidence in percentage: ");
+		int confidence = sc.nextInt();
+		System.out.println("Enter the number of transactions: ");
+		int n = sc.nextInt();
+		ArrayList<ItemDetails> Transaction =  getInput(n);
+		String[] items = new String[100];
+		
+		//printing the values
+		int j = 0;
+		System.out.println("Values entered :");
+		for (ItemDetails item : Transaction) {
+			j++;
+			System.out.println("Transaction ID: "+item.getTid());
+			items = item.getItems();
+			System.out.println("Items : ");
+			for (String s : items) {
+				if(s != null)
+					System.out.print(s+" ");
+			}
+			
+			System.out.println("\n");
+		}
+		
+		//converting from percentage
+		int value = Transaction.size();
+		int support = ((supportper * (value+1)) / 100);
+		System.out.println("support :"+support);
+
+		//unique items
+		
+		String[] itemlist = getItems(Transaction);
+		
+		System.out.println("Itemlist :");
+		for (String s : itemlist) {
+			if(s != null)
+			{
+				System.out.print(s+" ");
+			}
+		}
+		System.out.println("");
+		
+		
+		ArrayList<String> unique = UniqueItems(itemlist);
+		
+		
+		System.out.println("Unique Items :");
+		System.out.println("");	
+		for (String s : unique) {
+			if(s != null)
+			{
+				System.out.print(s+" ");
+			}
+		}
+		
+		ArrayList<ItemCount> ic= getItemCount(unique, itemlist);
+		
+		System.out.println("");
+		System.out.println("Count Values :");	
+		for (ItemCount c : ic) 
+		{
+			System.out.println(c.getItems()+" "+c.getCount());
+		}		
+		
+		ArrayList<ItemCount> icnew = sort(ic, support);
+		
+		System.out.println("new IC :");
+		for (ItemCount c : icnew) 
+		{
+			System.out.println(c.getItems()+" "+c.getCount());
+		}
+		
+		int k = 0;
+		String[] newItemSet = new String[100];
+		for(int i = 0; i < icnew.size(); i++)
+		{
+			ItemCount first = icnew.get(i);
+			String f = first.getItems();
+			for(j = i+1; j < icnew.size(); j++)
+			{
+				ItemCount second = icnew.get(j);
+				String s = second.getItems();
+				newItemSet[k] = f.concat(s);
+				k++;
+			}
+		}
+		
+		System.out.println("New Frequent Itemset: ");
+		for (String s : newItemSet)
+		{
+			if(s != null)
+				System.out.print(s+" ");
+		}		
+		System.out.println("");
+		System.out.println("Count Values :");	
+		
+		ArrayList<ItemCount> nic= AgetItemCount(newItemSet, Transaction);
+			
+			for (ItemCount c : nic) 
+			{
+				System.out.println(c.getItems()+" "+c.getCount());
+			}	
+			
+			icnew.clear();
+			icnew = sort(nic,support);
+			System.out.println("new IC :");
+			for (ItemCount c : icnew) 
+			{
+				System.out.println(c.getItems()+" "+c.getCount());
+			}
+			
+			String[] rule = new String[10];
+			int i = 0;
+			for (ItemCount c : icnew) 
+			{
+				rule[i] = c.getItems();
+				i++;
+			}
+			
+			System.out.println("Association Rule:");
+			for (String s : rule) {
+				if(s != null)
+				{
+					System.out.print(s+ "  ");
+				}
+			}
+
+}
+}
+
+

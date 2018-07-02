@@ -1,0 +1,38 @@
+public class ItemDetails{
+	int  tid;
+	String[] items;
+	
+	public void setTid(int tid){
+		this.tid = tid;
+	}
+	
+	public void setItems(String[] items){
+		this.items = items;
+	}
+	
+	public int getTid(){
+		return this.tid;
+	}
+	
+	public String[] getItems(){
+		
+		return this.items;
+	}
+	
+	
+	public ItemDetails(){
+		
+	}
+	
+	
+	public ItemDetails(int tid, String[] items){
+		this.tid = tid;
+		this.items = items;
+	}
+	
+	public static void main(String[] args){
+		
+	}
+
+	
+}

@@ -1,0 +1,40 @@
+
+public class ItemCount {
+	
+	int  count;
+	String item;
+	
+	public void setCount(int count){
+		this.count = count;
+	}
+	
+	public void setItem(String item){
+		this.item = item;
+	}
+	
+	public int getCount(){
+		return this.count;
+	}
+	
+	public String getItems(){
+		
+		return this.item;
+	}
+	
+	
+	public ItemCount(){
+		
+	}
+	
+	
+	public ItemCount(String item, int count){
+		this.count = count;
+		this.item = item;
+	}
+
+	public static void main(String[] args) {
+		
+
+	}
+
+}
